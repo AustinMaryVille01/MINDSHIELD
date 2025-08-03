@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindShield</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #1e3c72, #2a5298);
+      color: white;
+    }
+
+    .screen {
+      display: none;
+      padding: 40px 20px;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .title {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px 6px #00000044;
+      text-align: center;
+    }
+
+    .button {
+      display: block;
+      margin: 20px auto;
+      padding: 15px 30px;
+      background-color: #4A90E2;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      width: 240px;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #357ABD;
+    }
+
+    .whitelist-item,
+    .connected-app {
+      margin: 10px auto;
+      padding: 12px;
+      width: 280px;
+      background-color: white;
+      color: black;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .remove-btn,
+    .disconnect-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .home-button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #666;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .input-section {
+      margin-top: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 200px;
+      border-radius: 6px;
+      border: 1px solid #aaa;
+      margin-right: 10px;
+    }
+
+    .add-btn {
+      padding: 10px 15px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Home Screen -->
+  <div id="home" class="screen active">
+    <div class="title">MindShield</div>
+    <button class="button" onclick="showScreen('whitelist')">Whitelist</button>
+    <button class="button" onclick="showScreen('apps')">Connected Apps</button>
+    <button class="button" onclick="unavailable()">User Settings</button>
+    <button class="button" onclick="unavailable()">Mood Score</button>
+  </div>
+
+  <!-- Whitelist Screen -->
+  <div id="whitelist" class="screen">
+    <div class="title">Whitelist</div>
+
+    <div id="whitelist-container"></div>
+
+    <div class="input-section">
+      <input type="text" id="newUserInput" placeholder="Enter name"/>
+      <button class="add-btn" onclick="addUser()">Add</button>
+    </div>
+
+    <button class="home-button" onclick="showScreen('home')">Back to Home</button>
+  </div>
+
+  <!-- Connected Apps Screen -->
+  <div id="apps" class="screen">
+    <div class="title">Connected Apps</div>
+
+    <div id="apps-container"></div>
+
+    <div class="input-section">
+      <input type="text" id="newAppInput" placeholder="Enter app name"/>
+      <button class="add-btn" onclick="addApp()">Connect</button>
+    </div>
+
+    <button class="home-button" onclick="showScreen('home')">Back to Home</button>
+  </div>
+
+  <script>
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+      document.getElementById(id).classList.add('active');
+    }
+
+    function unavailable() {
+      alert("Unavailable");
+    }
+
+    function addUser() {
+      const input = document.getElementById('newUserInput');
+      const name = input.value.trim();
+      if (!name) {
+        alert("Please enter a name.");
+        return;
+      }
+
+      const container = document.getElementById('whitelist-container');
+
+      const item = document.createElement('div');
+      item.className = 'whitelist-item';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = name;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn';
+      removeBtn.textContent = 'Remove';
+      removeBtn.onclick = () => container.removeChild(item);
+
+      item.appendChild(nameSpan);
+      item.appendChild(removeBtn);
+      container.appendChild(item);
+
+      input.value = '';
+    }
+
+    function addApp() {
+      const input = document.getElementById('newAppInput');
+      const name = input.value.trim();
+      if (!name) {
+        alert("Please enter an app name.");
+        return;
+      }
+
+      const container = document.getElementById('apps-container');
+
+      const item = document.createElement('div');
+      item.className = 'connected-app';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = name;
+
+      const disconnectBtn = document.createElement('button');
+      disconnectBtn.className = 'disconnect-btn';
+      disconnectBtn.textContent = 'Disconnect';
+      disconnectBtn.onclick = () => container.removeChild(item);
+
+      item.appendChild(nameSpan);
+      item.appendChild(disconnectBtn);
+      container.appendChild(item);
+
+      input.value = '';
+    }
+  </script>
+</body>
+</html>
