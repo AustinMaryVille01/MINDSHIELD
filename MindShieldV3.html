@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindShield</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* Screen Wrapper */
+    .screen {
+      display: none;
+      max-width: 500px;
+      width: 100%;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+    .active {
+      display: block;
+      background-color: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+
+    /* Title / Logo */
+    .title {
+      font-size: 50px;
+      font-weight: bold;
+      margin-bottom: 40px;
+      text-align: center;
+      text-shadow: 2px 4px 12px rgba(0,0,0,0.5);
+      letter-spacing: 2px;
+    }
+
+    /* Buttons */
+    .button {
+      display: block;
+      margin: 20px auto;
+      padding: 18px 40px;
+      background: linear-gradient(135deg, #4A90E2, #357ABD);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 22px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 80%;
+      max-width: 350px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    }
+    .button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+    }
+
+    /* Item Cards */
+    .item-card {
+      background-color: white;
+      color: black;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 10px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      width: 90%;
+    }
+
+    /* Remove / Disconnect buttons */
+    .remove-btn, .disconnect-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+    .remove-btn:hover, .disconnect-btn:hover {
+      background: linear-gradient(135deg, #ff6655, #e74c3c);
+    }
+
+    /* Inputs */
+    .input-section {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    input[type="text"] {
+      padding: 12px;
+      width: 65%;
+      max-width: 240px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+    .add-btn {
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #28a745, #218838);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+    .add-btn:hover {
+      background: linear-gradient(135deg, #34d058, #28a745);
+    }
+
+    /* Back Button */
+    .home-button {
+      margin-top: 30px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #666, #444);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .home-button:hover {
+      background: linear-gradient(135deg, #777, #555);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Home Screen -->
+  <div id="home" class="screen active">
+    <div class="title">MindShield</div>
+    <button class="button" onclick="showScreen('whitelist')">Whitelist</button>
+    <button class="button" onclick="showScreen('apps')">Connected Apps</button>
+    <button class="button" onclick="unavailable()">User Settings</button>
+    <button class="button" onclick="unavailable()">Mood Score</button>
+  </div>
+
+  <!-- Whitelist Screen -->
+  <div id="whitelist" class="screen">
+    <div class="title">Whitelist</div>
+    <div id="whitelist-container"></div>
+
+    <div class="input-section">
+      <input type="text" id="newUserInput" placeholder="Enter name"/>
+      <button class="add-btn" onclick="addUser()">Add</button>
+    </div>
+
+    <button class="home-button" onclick="showScreen('home')">Back to Home</button>
+  </div>
+
+  <!-- Connected Apps Screen -->
+  <div id="apps" class="screen">
+    <div class="title">Connected Apps</div>
+    <div id="apps-container"></div>
+
+    <div class="input-section">
+      <input type="text" id="newAppInput" placeholder="Enter app name"/>
+      <button class="add-btn" onclick="addApp()">Connect</button>
+    </div>
+
+    <button class="home-button" onclick="showScreen('home')">Back to Home</button>
+  </div>
+
+  <script>
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+      document.getElementById(id).classList.add('active');
+    }
+
+    function unavailable() {
+      alert("Unavailable");
+    }
+
+    function addUser() {
+      const input = document.getElementById('newUserInput');
+      const name = input.value.trim();
+      if (!name) {
+        alert("Please enter a name.");
+        return;
+      }
+
+      const container = document.getElementById('whitelist-container');
+      const item = document.createElement('div');
+      item.className = 'item-card';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = name;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn';
+      removeBtn.textContent = 'Remove';
+      removeBtn.onclick = () => container.removeChild(item);
+
+      item.appendChild(nameSpan);
+      item.appendChild(removeBtn);
+      container.appendChild(item);
+
+      input.value = '';
+    }
+
+    function addApp() {
+      const input = document.getElementById('newAppInput');
+      const name = input.value.trim();
+      if (!name) {
+        alert("Please enter an app name.");
+        return;
+      }
+
+      const container = document.getElementById('apps-container');
+      const item = document.createElement('div');
+      item.className = 'item-card';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = name;
+
+      const disconnectBtn = document.createElement('button');
+      disconnectBtn.className = 'disconnect-btn';
+      disconnectBtn.textContent = 'Disconnect';
+      disconnectBtn.onclick = () => container.removeChild(item);
+
+      item.appendChild(nameSpan);
+      item.appendChild(disconnectBtn);
+      container.appendChild(item);
+
+      input.value = '';
+    }
+  </script>
+</body>
+</html>
