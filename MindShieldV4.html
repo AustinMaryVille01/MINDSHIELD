@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindShield</title>
+  <style>
+    /* Global */
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      transition: background 0.8s ease;
+    }
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    /* Screen containers */
+    .screen {
+      display: none;
+      max-width: 500px;
+      width: 100%;
+      padding: 30px;
+      box-sizing: border-box;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      background-color: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .active { display: block; }
+    .fade-in { opacity: 1 !important; }
+
+    /* Title / Logo */
+    .title {
+      font-size: 50px;
+      font-weight: bold;
+      margin-bottom: 40px;
+      text-align: center;
+      text-shadow: 2px 4px 12px rgba(0,0,0,0.5);
+      letter-spacing: 2px;
+    }
+
+    /* Buttons */
+    .button {
+      display: block;
+      margin: 20px auto;
+      padding: 18px 40px;
+      background: linear-gradient(135deg, #4A90E2, #357ABD);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 22px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 80%;
+      max-width: 350px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    }
+    .button:hover:not([disabled]) {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+    }
+    .button[disabled] {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* Inputs */
+    input[type="text"], input[type="password"] {
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    .input-section {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* Item Cards */
+    .item-card {
+      background-color: white;
+      color: black;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 10px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      width: 90%;
+    }
+
+    .remove-btn, .disconnect-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+    .remove-btn:hover, .disconnect-btn:hover {
+      background: linear-gradient(135deg, #ff6655, #e74c3c);
+    }
+
+    .settings-row {
+      width: 90%;
+      margin: 16px auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: #eef6ff;
+    }
+    .settings-row label { font-size: 18px; }
+    .range-wrap { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    input[type="range"] { width: 100%; accent-color: #6ec1ff; }
+    .ticks { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.9; }
+
+    /* Back Button */
+    .home-button {
+      margin-top: 30px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #666, #444);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .home-button:hover { background: linear-gradient(135deg, #777, #555); }
+
+    /* Home user name (top left) */
+    .username-label {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #eef6ff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Screen -->
+  <div id="login" class="screen active fade-in">
+    <div class="title">MindShield Login</div>
+    <input type="text" id="loginName" placeholder="Enter your name"/>
+    <input type="password" id="loginPass" maxlength="16" placeholder="Enter password"/>
+    <button class="button" onclick="login()">Login</button>
+  </div>
+
+  <!-- Home -->
+  <div id="home" class="screen">
+    <div class="username-label" id="usernameLabel"></div>
+    <div class="title">MindShield</div>
+    <button class="button" onclick="navigate('whitelist')">Whitelist</button>
+    <button class="button" onclick="navigate('apps')">Connected Apps</button>
+    <button class="button" onclick="navigate('settings')">User Settings</button>
+    <button class="button" onclick="navigate('mood')">Mood Score</button>
+  </div>
+
+  <!-- Whitelist -->
+  <div id="whitelist" class="screen">
+    <div class="title">Whitelist</div>
+    <div id="whitelist-container"></div>
+    <div class="input-section">
+      <input type="text" id="newUserInput" placeholder="Enter name"/>
+      <button class="add-btn" onclick="addUser()">Add</button>
+    </div>
+    <button class="home-button" onclick="navigate('home')">Back to Home</button>
+  </div>
+
+  <!-- Connected Apps -->
+  <div id="apps" class="screen">
+    <div class="title">Connected Apps</div>
+    <div id="apps-container"></div>
+    <div class="input-section">
+      <input type="text" id="newAppInput" placeholder="Enter app name"/>
+      <button class="add-btn" onclick="addApp()">Connect</button>
+    </div>
+    <button class="home-button" onclick="navigate('home')">Back to Home</button>
+  </div>
+
+  <!-- User Settings -->
+  <div id="settings" class="screen">
+    <div class="title">User Settings</div>
+    <button class="button" onclick="navigate('blocked')">Blocked Words</button>
+    <div class="settings-row">
+      <label for="shieldRange">Shield Intensity</label>
+      <div class="range-wrap">
+        <input id="shieldRange" type="range" min="1" max="5" step="1" oninput="updateShield(this.value)">
+        <div class="ticks"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+      </div>
+    </div>
+    <div class="settings-row">
+      <label for="autoHide">Auto Hide Blocked Responses</label>
+      <input id="autoHide" type="checkbox" onchange="toggleAutoHide(this.checked)">
+    </div>
+    <button class="home-button" onclick="navigate('home')">Back to Home</button>
+  </div>
+
+  <!-- Blocked Words -->
+  <div id="blocked" class="screen">
+    <div class="title">Blocked Words</div>
+    <div id="blocked-container"></div>
+    <div class="input-section">
+      <input type="text" id="newBlockedInput" placeholder="Enter blocked word/phrase"/>
+      <button class="add-btn" onclick="addBlocked()">Add</button>
+    </div>
+    <button class="home-button" onclick="navigate('settings')">Back to Settings</button>
+  </div>
+
+  <!-- Mood Score -->
+  <div id="mood" class="screen">
+    <div class="title">Mood Score</div>
+    <div class="settings-row">
+      <label for="moodRange">Your Mood</label>
+      <div class="range-wrap">
+        <input id="moodRange" type="range" min="1" max="5" step="1" value="3">
+        <div class="ticks">
+          <span>Very Bad</span><span>Bad</span><span>Neutral</span><span>Good</span><span>Excellent</span>
+        </div>
+      </div>
+    </div>
+    <button class="button" onclick="saveMood()">Save Mood</button>
+    <div id="mood-history"></div>
+    <button id="meditationBtn" class="button" disabled>Meditation Tips</button>
+    <button class="button">Response Guide</button>
+    <button class="home-button" onclick="navigate('home')">Back to Home</button>
+  </div>
+
+  <script>
+    const state = {
+      username: '',
+      whitelist: [],
+      apps: [],
+      blockedWords: [],
+      shieldIntensity: 3,
+      autoHide: false,
+      moods: [],
+      moodLabels: ["Very Bad","Bad","Neutral","Good","Excellent"]
+    };
+
+    /* ------------ Gradient backgrounds ------------ */
+    function setGradient(page) {
+      if (page === 'login') {
+        document.body.style.background = "linear-gradient(-45deg, #141E30, #243B55, #2C5364, #203A43)";
+      } else if (page === 'home') {
+        document.body.style.background = "linear-gradient(-45deg, #1e3c72, #2a5298, #ff4e50, #f9d423)";
+      } else if (page === 'whitelist') {
+        document.body.style.background = "linear-gradient(-45deg, #11998e, #38ef7d, #56ccf2, #2f80ed)";
+      } else if (page === 'apps') {
+        document.body.style.background = "linear-gradient(-45deg, #6a11cb, #2575fc, #5ee7df, #b490ca)";
+      } else if (page === 'settings') {
+        document.body.style.background = "linear-gradient(-45deg, #1f4037, #99f2c8, #56ccf2, #2f80ed)";
+      } else if (page === 'blocked') {
+        document.body.style.background = "linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #56ccf2)";
+      } else if (page === 'mood') {
+        document.body.style.background = "linear-gradient(-45deg, #43cea2, #185a9d, #56ccf2, #2f80ed)";
+      }
+      document.body.style.backgroundSize = "400% 400%";
+      document.body.style.animation = "gradientBG 15s ease infinite";
+    }
+
+    /* ------------ Navigation ------------ */
+    function navigate(id) {
+      const current = document.querySelector('.screen.active');
+      current.classList.remove('fade-in');
+      setTimeout(() => {
+        current.classList.remove('active');
+        setGradient(id);
+        const next = document.getElementById(id);
+        if (id === 'settings') syncSettingsUI();
+        if (id === 'mood') renderMoodHistory();
+        next.classList.add('active');
+        setTimeout(() => next.classList.add('fade-in'), 20);
+      }, 300);
+    }
+
+    /* ------------ Login ------------ */
+    function login() {
+      const name = document.getElementById('loginName').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+      if (!name || !pass) return alert("Please enter both name and password.");
+      state.username = name;
+      document.getElementById('usernameLabel').textContent = "Welcome, " + name;
+      navigate('home');
+    }
+
+    /* ------------ Whitelist ------------ */
+    function addUser() {
+      const input = document.getElementById('newUserInput');
+      const name = input.value.trim();
+      if (!name) return alert("Please enter a name.");
+      state.whitelist.push(name);
+      renderList('whitelist-container', state.whitelist, (idx)=>removeFrom(state.whitelist, idx, 'whitelist-container'));
+      input.value = '';
+    }
+
+    /* ------------ Connected Apps ------------ */
+    function addApp() {
+      const input = document.getElementById('newAppInput');
+      const name = input.value.trim();
+      if (!name) return alert("Please enter an app name.");
+      state.apps.push(name);
+      renderList('apps-container', state.apps, (idx)=>removeFrom(state.apps, idx, 'apps-container'), 'disconnect-btn', 'Disconnect');
+      input.value = '';
+    }
+
+    /* ------------ Blocked Words ------------ */
+    function addBlocked() {
+      const input = document.getElementById('newBlockedInput');
+      const word = input.value.trim();
+      if (!word) return alert("Please enter a word or phrase.");
+      state.blockedWords.push(word);
+      renderList('blocked-container', state.blockedWords, (idx)=>removeFrom(state.blockedWords, idx, 'blocked-container'));
+      input.value = '';
+    }
+
+    /* ------------ List renderer ------------ */
+    function renderList(containerId, arr, removeHandler, removeClass='remove-btn', removeText='Remove') {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      arr.forEach((val, i) => {
+        const item = document.createElement('div');
+        item.className = 'item-card';
+        const span = document.createElement('span');
+        span.textContent = val;
+        const btn = document.createElement('button');
+        btn.className = removeClass;
+        btn.textContent = removeText;
+        btn.onclick = () => removeHandler(i);
+        item.appendChild(span);
+        item.appendChild(btn);
+        container.appendChild(item);
+      });
+    }
+    function removeFrom(arr, index, containerId) {
+      arr.splice(index, 1);
+      renderList(containerId, arr, (idx)=>removeFrom(arr, idx, containerId));
+    }
+
+    /* ------------ Settings ------------ */
+    function updateShield(value) { state.shieldIntensity = Number(value); }
+    function toggleAutoHide(checked) { state.autoHide = !!checked; }
+    function syncSettingsUI() {
+      document.getElementById('shieldRange').value = state.shieldIntensity;
+      document.getElementById('autoHide').checked = state.autoHide;
+    }
+
+    /* ------------ Mood Score ------------ */
+    function saveMood() {
+      const val = parseInt(document.getElementById('moodRange').value);
+      const label = state.moodLabels[val-1];
+      const ts = new Date().toLocaleString();
+      state.moods.push({score: val, label, time: ts});
+      renderMoodHistory();
+      if (val <= 2) document.getElementById('meditationBtn').disabled = false;
+    }
+    function renderMoodHistory() {
+      const container = document.getElementById('mood-history');
+      container.innerHTML = '';
+      state.moods.forEach((m, idx) => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `<span>${m.time}: ${m.label}</span>
+                          <button class="remove-btn" onclick="removeMood(${idx})">Remove</button>`;
+        container.appendChild(card);
+      });
+      const anyBad = state.moods.some(m => m.score <= 2);
+      document.getElementById('meditationBtn').disabled = !anyBad;
+    }
+    function removeMood(idx) {
+      state.moods.splice(idx, 1);
+      renderMoodHistory();
+    }
+
+    /* Init */
+    setGradient('login');
+  </script>
+</body>
+</html>
